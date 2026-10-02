@@ -18,6 +18,13 @@ static std::string cleanWord(const std::string& raw) {
 	return w;
 }
 
+void sortAndPrintTop(std::vector<WordCount>& counts, size_t topN = 10){
+	std::sort(counts.begin(), counts.end(), [] (WordCount a, WordCount b) {return a.second > b.second;});
+	for (size_t i = 0 ; i < topN ; i++){
+		std::cout << i + 1 << ". " << counts[i].first << std::endl;
+	}
+}
+
 int main(int argc, char** argv) {
 	using namespace std;
 	using namespace std::chrono;
@@ -66,6 +73,7 @@ int main(int argc, char** argv) {
 		// skeleton for unique mode
 		// before the loop: declare a vector "seen"
 		// TODO
+		std::vector<string> seen;
 
 		while (input >> word) {
 			// élimine la ponctuation et les caractères spéciaux
@@ -74,10 +82,95 @@ int main(int argc, char** argv) {
 
 			// add to seen if it is new
 			// TODO
+			bool addelt = true;
+			for (string& e : seen){
+				if (word == e) {
+					addelt = false;
+					break;
+				}
+			}
+			if (addelt){seen.push_back(word);}
 		}
 	input.close();
 	// TODO
-	// cout << "Found " << seen.size() << " unique words." << endl;
+	cout << "Found " << seen.size() << " unique words." << endl;
+
+	} else if (mode == "freq") {
+		std::vector<pair<string, int>> seen;
+
+		while (input >> word) {
+			// élimine la ponctuation et les caractères spéciaux
+			word = cleanWord(word);
+			if (word.empty()) continue;
+
+			// add to seen if it is new
+			bool addelt = true;
+			for (pair<string, int>& e : seen){
+				if (word == e.first) {
+					e.second++;
+					addelt = false;
+					break;
+				}
+			}
+			if (addelt){seen.push_back(make_pair(word, 1));}
+		}
+	input.close();
+	cout << "Found " << seen.size() << " unique words." << endl;
+	for (pair<string, int>& e : seen){
+		if ("war" == e.first) {
+			cout << "War : " << e.second << endl;
+		} else if ("peace" == e.first) {
+			cout << "Peace : " << e.second << endl;
+		} else if ("toto" == e.first) {
+			cout << "Toto : " << e.second << endl;
+		} 
+	}
+	sortAndPrintTop(seen);
+	
+
+	} else if (mode == "freqstd") {
+		std::unordered_map<string,int> seen;
+
+		while (input >> word) {
+			// élimine la ponctuation et les caractères spéciaux
+			word = cleanWord(word);
+			if (word.empty()) continue;
+
+			// add to seen if it is new
+			if (seen.find(word) == seen.end()){
+				seen[word] = 1;
+			} else {
+				seen[word]++;
+			}
+		}
+	input.close();
+	cout << "Found " << seen.size() << " unique words." << endl;
+
+	if (seen.find("war") != seen.end()){
+		cout << "War : " << seen["war"] << endl;
+	} else {
+		cout << "War : " << 0 << endl;
+	}
+
+	if (seen.find("peace") != seen.end()){
+		cout << "Peace : " << seen["peace"] << endl;
+	} else {
+		cout << "Peace : " << 0 << endl;
+	}
+
+	if (seen.find("toto") != seen.end()){
+		cout << "Toto : " << seen["toto"] << endl;
+	} else {
+		cout << "Toto : " << 0 << endl;
+	}
+
+	
+	std::vector<pair<string, int>> seen_vec;
+	for (auto& e : seen){
+		seen_vec.push_back(e);
+	}
+	sortAndPrintTop(seen_vec);
+	
 
 	} else {
 		// unknown mode: print usage and exit
